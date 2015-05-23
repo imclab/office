@@ -271,7 +271,11 @@ It has been developed with the help of a great many people including (but not li
 
 		//skybox
 		var skyGeometry = new THREE.IcosahedronGeometry(10,2);
-		var skyMaterial = new THREE.MeshBasicMaterial({color:0x0055ff});
+		var skyMaterial = new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture(
+			    "media/stars.jpg"),
+			color:0x55aaff
+			});
 		var skybox = new THREE.Mesh( skyGeometry, skyMaterial );
 		skybox.scale.set(100,100,100);
 		skybox.material.side = THREE.BackSide;
