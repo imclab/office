@@ -269,6 +269,19 @@ It has been developed with the help of a great many people including (but not li
 		dodecahedron.position.set(-24,-4,45);
 		scene.add(dodecahedron);
 
+		//office render sphere image
+		var officeSphereGeometry = new THREE.IcosahedronGeometry(1.5,3);
+		var officeSphereMaterial = new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture(
+			    "media/officeRender.jpg"),
+			color:0xffffff,
+			side: THREE.BackSide
+			});
+		var officeSphere = new THREE.Mesh( officeSphereGeometry, officeSphereMaterial );
+		officeSphere.position.set(-14,8.3,85);
+		officeSphere.rotation.y = -1.4;
+		scene.add(officeSphere);
+
 		//skybox
 		var skyGeometry = new THREE.IcosahedronGeometry(10,2);
 		var skyMaterial = new THREE.MeshBasicMaterial({
@@ -337,6 +350,8 @@ It has been developed with the help of a great many people including (but not li
 		var posterDistance = 100;
 		var fridgeDistance = 100;
 		var legoDistance = 100;
+		var officeSphereDistance = 100;
+		var sphereTimer = 0;
 
 		var t = 1;
 		/*
@@ -375,6 +390,20 @@ It has been developed with the help of a great many people including (but not li
 			if (LEGO.position.x > 50){
 				LEGO.position.x = 20;
 			}
+
+			//office sphere image render grows and takes its place
+			if (camera.position.distanceTo(officeSphere.position)<10){
+				sphereTimer = Math.min(250, sphereTimer+1);
+			}else{
+				sphereTimer = Math.max(0, sphereTimer-1);
+			}
+
+			officeSphere.position.x = -14 + 0.03*sphereTimer;
+			officeSphere.position.y = 8.3 - 0.0001*sphereTimer*sphereTimer;
+			officeSphere.position.z = 85 - 0.06*sphereTimer;
+			var sScale = Math.max(1.2, sphereTimer/100);
+			officeSphere.scale.set(sScale, sScale, sScale);
+
 
 
 			FIT.rotation.y += .006;
