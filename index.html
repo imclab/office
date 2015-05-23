@@ -39,7 +39,11 @@ It has been developed with the help of a great many people including (but not li
 	</head>
 
 	<body>
-	<video id="movie" autoplay=true style="display:none" src="media/librarymono.mp4" loop=true></video>
+
+	<video id="libgif" autoplay=true style="display:none" src="media/librarymono.mp4" loop=true></video>
+
+	<video id="demoMovie" autoplay=true style="display:none" src="media/engelbart.mp4" loop=true></video>
+
 	</body>
 
 	<!--
@@ -87,19 +91,68 @@ It has been developed with the help of a great many people including (but not li
 		var effect = new THREE.VREffect( renderer );
 		effect.setSize( window.innerWidth, window.innerHeight );
 
-		var movie = document.getElementById("movie");
-		var videoTexture = new THREE.Texture(movie);
-		videoTexture.minFilter = THREE.LinearFilter;
-		videoTexture.magFilter = THREE.LinearFilter;
-		var videoMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side: THREE.BackSide } );
+		var libMovie = document.getElementById("libgif");
+		var libVideoTexture = new THREE.Texture(libMovie);
+		libVideoTexture.minFilter = THREE.LinearFilter;
+		libVideoTexture.magFilter = THREE.LinearFilter;
+		var libVideoMaterial = new THREE.MeshBasicMaterial( { map: libVideoTexture, overdraw: true, side: THREE.BackSide } );
 
 		//libgif
 		// var libImage = new THREE.ImageUtils.loadTexture( "media/librarygif.png" );
 		var libgifGeom = new THREE.IcosahedronGeometry(10,3);
-		var libgif = new THREE.Mesh( libgifGeom, videoMaterial );
+		var libgif = new THREE.Mesh( libgifGeom, libVideoMaterial );
 		libgif.rotation.y = 2.5;
 		libgif.position.set(52,3,70);
 		scene.add(libgif);
+
+		//demo space film
+		var demoMovie = document.getElementById("demoMovie");
+		var demoVideoTexture = new THREE.Texture(demoMovie);
+		demoVideoTexture.minFilter = THREE.LinearFilter;
+		demoVideoTexture.magFilter = THREE.LinearFilter;
+		var demoVideoMaterial = new THREE.MeshBasicMaterial( { map: demoVideoTexture, overdraw: true } );
+
+		var demoFilmGeom = new THREE.PlaneGeometry( 15, 12, 32 );
+		var demoFilmPlane = new THREE.Mesh( demoFilmGeom, demoVideoMaterial );
+		demoFilmPlane.position.set(0,5,-49);
+		scene.add( demoFilmPlane );
+
+		//demo space projector
+		var projectorGeometry = new THREE.BoxGeometry(2,1,2);
+		var projectorMaterial = new THREE.MeshLambertMaterial();
+		var projector = new THREE.Mesh( projectorGeometry, projectorMaterial );
+		projector.position.set(0,-3,-39);
+		projector.rotation.x = .4;
+		scene.add(projector);
+
+		//Emily drawings
+		var drawingMap = THREE.ImageUtils.loadTexture( "media/broken-arches.jpg" );
+		var drawingGeom = new THREE.PlaneGeometry( 12, 12, 32 );
+		var drawingMaterial = new THREE.MeshBasicMaterial({color: 0x999999, map: drawingMap});
+		var drawingPlane = new THREE.Mesh( drawingGeom, drawingMaterial );
+		drawingPlane.position.set(27,2,-17.3);
+		drawingPlane.rotation.y = .1;
+		scene.add( drawingPlane );
+
+		//seeing spaces poster
+		var posterMap = THREE.ImageUtils.loadTexture( "media/SeeingSpacesSmall.jpg" );
+		var seeingGeom = new THREE.PlaneGeometry( 20, 12, 32 );
+		var seeingMaterial = new THREE.MeshPhongMaterial({map: posterMap});
+		var seeingPlane = new THREE.Mesh( seeingGeom, seeingMaterial );
+		seeingPlane.position.set(46,4,42);
+		seeingPlane.rotation.y = -Math.PI/2;
+		scene.add( seeingPlane );
+
+		//seeingLight, motion sensitive	
+		var seeingLight = new THREE.PointLight( 0xffffcc, .8, 20);
+		seeingLight.position.set( 40,10,40);
+		scene.add( seeingLight );
+
+		//kitchenLight, motion sensitive	
+		var fridgeLight = new THREE.PointLight( 0xffffcc, .8, 20);
+		fridgeLight.position.set( 48,8,-9);
+		scene.add( fridgeLight );
+
 
 		//create FIT:
 
@@ -116,7 +169,7 @@ It has been developed with the help of a great many people including (but not li
 		var tet4 = new THREE.Mesh( tetgeom, tetcyan );
 		var tet5 = new THREE.Mesh( tetgeom, tetyellow );
 
-		var FIT = new THREE.Object3D(); FIT.add(tet, tet2, tet3, tet4, tet5);
+		var FIT = new THREE.Object3D();
 		FIT.position.z = -38;
 		FIT.position.x = -29;
 		FIT.position.y = 7;
@@ -133,6 +186,43 @@ It has been developed with the help of a great many people including (but not li
 		tet3.rotateOnAxis (axis, 2*fturn);
 		tet4.rotateOnAxis (axis, 3*fturn);
 		tet5.rotateOnAxis (axis, 4*fturn);
+
+		//create LEGO
+		var LEGOmat = new THREE.MeshPhongMaterial({color:0xffff77});
+		var LEGOcyGeom = new THREE.CylinderGeometry(.2,.2,.8);
+		var LEGObrick =	new THREE.Mesh(new THREE.BoxGeometry(1.8,1.5,1.2), LEGOmat);
+		var LEGO1 = new THREE.Mesh(LEGOcyGeom, LEGOmat);
+		var LEGO2 = new THREE.Mesh(LEGOcyGeom, LEGOmat);
+		var LEGO3 = new THREE.Mesh(LEGOcyGeom, LEGOmat);
+		var LEGO4 = new THREE.Mesh(LEGOcyGeom, LEGOmat);
+		var LEGO5 = new THREE.Mesh(LEGOcyGeom, LEGOmat);
+		var LEGO6 = new THREE.Mesh(LEGOcyGeom, LEGOmat);
+		var LEGO = new THREE.Object3D();
+		LEGO.add(LEGObrick, LEGO1, LEGO2, LEGO3, LEGO4, LEGO5, LEGO6);
+
+
+		LEGO1.position.x = .5;
+		LEGO2.position.x = -.5;
+
+		LEGO4.position.x = .5;
+		LEGO6.position.x = -.5;
+
+		LEGO1.position.z = .3;
+		LEGO2.position.z = .3;
+		LEGO3.position.z = .3;
+
+		LEGO4.position.z = -.3;
+		LEGO5.position.z = -.3;
+		LEGO6.position.z = -.3;
+
+		LEGObrick.position.y = -1;
+
+		LEGO.scale.set(.2,.2,.2);
+
+		LEGO.position.y = -3;
+		LEGO.position.x = -20;
+		LEGO.position.z = -10;
+		scene.add(LEGO);
 
 		//particles
 			// create particles: mostly copied from aerotwist.com's particle creation tutorial
@@ -157,7 +247,7 @@ It has been developed with the help of a great many people including (but not li
 			particle.velocity = new THREE.Vector3(
 			  Math.random()/20,
 			  -Math.random()*.1,
-			  Math.random()/20);
+			  Math.random()/50);
 		  particles.vertices.push(particle);
 		}
 
@@ -239,13 +329,48 @@ It has been developed with the help of a great many people including (but not li
 
 		});
 
+		var filmDistance = 100;
+		var posterDistance = 100;
+		var fridgeDistance = 100;
+		var legoDistance = 100;
 
+		var t = 1;
 		/*
 		Request animation frame loop function
 		*/
 		function animate() {
 
+			t+=1
+
 			camera.position.y = 2;
+
+			demoMovie.volume = 3/(filmDistance*filmDistance);
+			filmDistance = camera.position.distanceTo(projector.position);
+
+			//motion sensitive lighting
+			posterDistance = camera.position.distanceTo(seeingPlane.position);
+			if (posterDistance < 22){
+				seeingLight.intensity = .8;
+			} else {
+				seeingLight.intensity = 0;
+			}
+
+			fridgeDistance = camera.position.distanceTo(fridgeLight.position);
+			if (fridgeDistance < 12){
+				fridgeLight.intensity = 1;
+			} else {
+				fridgeLight.intensity = .2;
+			}
+
+			//lego runs away when near
+			legoDistance = camera.position.distanceTo(LEGO.position);
+			if (legoDistance < 8){
+				LEGO.position.x += Math.sin(t/40);
+				LEGO.position.z += Math.cos(t/51);
+			}
+			if (LEGO.position.x > 50){
+				LEGO.position.x = 20;
+			}
 
 
 			FIT.rotation.y += .006;
@@ -262,7 +387,7 @@ It has been developed with the help of a great many people including (but not li
 			    // check if we need to reset
 			    if (particle.y < -3) {
 			    	particle.x = Math.random() * 23 + 35,
-		      		particle.y = Math.random() * 27,
+		      		particle.y = Math.random() * 20,
 		      		particle.z = Math.random() * 23 - 52,
 			      particle.velocity.y = -Math.random()/40;
 			    }
@@ -278,8 +403,11 @@ It has been developed with the help of a great many people including (but not li
 			        	/*
 			Update movie texture
 			*/	
-			if (movie.readyState === movie.HAVE_ENOUGH_DATA){
-				videoMaterial.map.needsUpdate = true;
+			if (libgif.readyState === libgif.HAVE_ENOUGH_DATA){
+				libVideoMaterial.map.needsUpdate = true;
+			}
+			if (demoMovie.readyState === demoMovie.HAVE_ENOUGH_DATA){
+				demoVideoMaterial.map.needsUpdate = true;
 			}
 
 			//Update VR headset position and apply to camera.
