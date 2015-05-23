@@ -1,0 +1,327 @@
+<!--
+
+Based on the standard ThreeJS-based boilerplate for webVR
+	currently being used by the eleVR team.
+
+It has oculus support for webVR browsers, support for the non-VR web,
+	and support for smartphone on google cardboard or similar VR device.
+
+Supported Navigation Controls:
+	WASD + E/Q navigation support for rotation.
+	Arrow key navigation support for moving the location of the camera.
+	Gamepad joystick navigation controls.
+	Orientation control with a VR headset OR mobile phone.
+
+Click to enter full-screen VR mode.
+
+This boilerplate is based on Mozilla's boilerplate: https://github.com/MozVR/vr-web-examples/tree/master/threejs-vr-boilerplate
+
+It has been developed with the help of a great many people including (but not limited to) Vi Hart, Andrew Lutomirski, Henry Segerman, and the Firefox webVR team.
+
+-->
+
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>Office</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				padding: 0;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+	<video id="movie" autoplay=true style="display:none" src="media/librarymono.mp4" loop=true></video>
+	</body>
+
+	<!--
+	three.js 3d library
+	-->
+	<script src="js/lib/three.min.js"></script>
+
+	<!--
+	PhoneVR acquires positional information from phone orientation. This is used by VRControls.js
+	VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
+	 -->
+	<script src="js/vr/PhoneVR.js"></script>
+	<script src="js/vr/VRControls.js"></script>
+
+
+    <script src="js/loaders/OBJLoader.js"></script>
+
+	<!--
+	VREffect.js handles stereo camera setup and rendering.
+	-->
+	<script src="js/vr/VREffect.js"></script>
+
+
+	<script>
+		// Setup three.js WebGL renderer
+		var renderer = new THREE.WebGLRenderer( { antialias: true } );
+
+		// Append the canvas element created by the renderer to document body element.
+		document.body.appendChild( renderer.domElement );
+
+		//Create a three.js scene
+		var scene = new THREE.Scene();
+
+		//Create a three.js camera
+		var camera = new THREE.PerspectiveCamera( 110, window.innerWidth / window.innerHeight, 2, 10000 );
+		scene.add(camera);
+
+		//Apply VR headset positional data to camera.
+		var controls = new THREE.VRControls( camera );
+		// controls.enableGamepad(false);
+		// controls.enableWASD(false);
+		// controls.enableArrows(false);
+
+		//Apply VR stereo rendering to renderer
+		var effect = new THREE.VREffect( renderer );
+		effect.setSize( window.innerWidth, window.innerHeight );
+
+		var movie = document.getElementById("movie");
+		var videoTexture = new THREE.Texture(movie);
+		videoTexture.minFilter = THREE.LinearFilter;
+		videoTexture.magFilter = THREE.LinearFilter;
+		var videoMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side: THREE.BackSide } );
+
+		//libgif
+		// var libImage = new THREE.ImageUtils.loadTexture( "media/librarygif.png" );
+		var libgifGeom = new THREE.IcosahedronGeometry(10,3);
+		var libgif = new THREE.Mesh( libgifGeom, videoMaterial );
+		libgif.rotation.y = 2.5;
+		libgif.position.set(52,3,70);
+		scene.add(libgif);
+
+		//create FIT:
+
+		var tetgeom = new THREE.TetrahedronGeometry(3);
+		var tetred = new THREE.MeshPhongMaterial( {color: 0xbb2266} );
+		var tetblue = new THREE.MeshPhongMaterial( {color: 0xff6622} );
+		var tetgreen = new THREE.MeshPhongMaterial( {color: 0xff7099} );
+		var tetyellow = new THREE.MeshPhongMaterial( {color: 0x553333} );
+		var tetcyan = new THREE.MeshPhongMaterial( {color: 0x227777} );
+
+		var tet = new THREE.Mesh( tetgeom, tetred );
+		var tet2 = new THREE.Mesh( tetgeom, tetblue );
+		var tet3 = new THREE.Mesh( tetgeom, tetgreen );
+		var tet4 = new THREE.Mesh( tetgeom, tetcyan );
+		var tet5 = new THREE.Mesh( tetgeom, tetyellow );
+
+		var FIT = new THREE.Object3D(); FIT.add(tet, tet2, tet3, tet4, tet5);
+		FIT.position.z = -38;
+		FIT.position.x = -29;
+		FIT.position.y = 7;
+		FIT.add(tet, tet2, tet3, tet4, tet5);
+		scene.add(FIT);
+
+		var t = ((1 + Math.sqrt(5))/2);
+		var fturn = 6.283/5;
+		var axis = new THREE.Vector3( t, 1, 0 );
+		axis.normalize();
+
+		tet.rotateOnAxis (axis, 0);
+		tet2.rotateOnAxis (axis, fturn);
+		tet3.rotateOnAxis (axis, 2*fturn);
+		tet4.rotateOnAxis (axis, 3*fturn);
+		tet5.rotateOnAxis (axis, 4*fturn);
+
+		//particles
+			// create particles: mostly copied from aerotwist.com's particle creation tutorial
+		var particleCount = 100,
+		    particles = new THREE.Geometry(),
+		    pMaterial = new THREE.PointCloudMaterial({
+		      color: 0xFFFFFF,
+		      size: 2,
+			  map: THREE.ImageUtils.loadTexture(
+			    "media/particle.png"),
+			  blending: THREE.AdditiveBlending,
+			  transparent: true
+			    });
+
+		for (var p = 0; p < particleCount; p++) {
+		  var pX = Math.random() * 23 + 35;
+	      var pY = Math.random() * 27;
+	      var pZ = Math.random() * 23 - 52;
+		  var particle = (
+		        new THREE.Vector3(pX, pY, pZ)
+		      );
+			particle.velocity = new THREE.Vector3(
+			  Math.random()/20,
+			  -Math.random()*.1,
+			  Math.random()/20);
+		  particles.vertices.push(particle);
+		}
+
+		// create the particle system
+		var particleSystem = new THREE.PointCloud(
+		    particles,
+		    pMaterial);
+
+		particleSystem.sortParticles = true;
+		particleSystem.frustumCulled = false;
+
+		scene.add(particleSystem);
+
+		//dome
+		var geometry = new THREE.IcosahedronGeometry(10,2);
+		var material = new THREE.MeshLambertMaterial({wireframe:true, wireframeLinewidth:5});
+		var dodecahedron = new THREE.Mesh( geometry, material );
+		dodecahedron.scale.set(1.3,1.3,1.3);
+		dodecahedron.position.set(-24,-4,45);
+		scene.add(dodecahedron);
+
+		//skybox
+		var skyGeometry = new THREE.IcosahedronGeometry(10,2);
+		var skyMaterial = new THREE.MeshBasicMaterial({color:0x0055ff});
+		var skybox = new THREE.Mesh( skyGeometry, skyMaterial );
+		skybox.scale.set(100,100,100);
+		skybox.material.side = THREE.BackSide;
+		scene.add(skybox);
+
+		//lights		
+		var light = new THREE.PointLight( 0xffaaaa, 1, 20);
+		light.position.set( -26,5,-38);
+		light.castShadow = true;
+		scene.add( light );
+
+		var light2 = new THREE.SpotLight( 0xffffff, .8, 8000);
+		light2.position.set( 0,100,-100);
+		light2.castShadow = true;
+		// scene.add( light2 );
+
+		//SUN
+		var sunLight = new THREE.PointLight( 0xffffff, 1, 100);
+		sunLight.position.set( 0,16,110);
+		sunLight.castShadow = true;
+		scene.add( sunLight );
+
+		var sun2 = new THREE.PointLight( 0xffffff, 1, 100);
+		sun2.position.set( -44,14,0);
+		sun2.castShadow = true;
+		scene.add( sun2 );
+		var sunGeometry = new THREE.IcosahedronGeometry(1,1);
+		var sunMaterial = new THREE.MeshBasicMaterial({color:0xff3300});
+		var sunObject = new THREE.Mesh( sunGeometry, sunMaterial );
+		// sunObject.scale.set(1.3,1.3,1.3);
+		sunObject.position.set(sun2.position.x,sun2.position.y,sun2.position.z);
+		// scene.add(sunObject);
+
+
+		//office
+		var office = new THREE.Object3D();
+		var officeMaterial = new THREE.MeshLambertMaterial();
+
+	    // load the mesh
+	    var manager = new THREE.LoadingManager();
+	    var loader = new THREE.OBJLoader(manager);
+
+		loader.load( 'media/office.obj', function ( object ) {
+		object.scale.set(.05,.05,.05);
+		object.position.set(0,-4,-50);		
+		object.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                child.material = officeMaterial;
+                child.frustumCulled = false;
+            }
+        });
+
+		office = object;
+		scene.add( office );
+
+		});
+
+
+		/*
+		Request animation frame loop function
+		*/
+		function animate() {
+
+			camera.position.y = 2;
+
+
+			FIT.rotation.y += .006;
+			FIT.rotation.x += .002;
+
+			var pCount = particleCount;
+
+			while (pCount--) {
+
+			    // get the particle
+			    var particle =
+			      particles.vertices[pCount];
+
+			    // check if we need to reset
+			    if (particle.y < -3) {
+			    	particle.x = Math.random() * 23 + 35,
+		      		particle.y = Math.random() * 27,
+		      		particle.z = Math.random() * 23 - 52,
+			      particle.velocity.y = -Math.random()/40;
+			    }
+
+			    // update the velocity
+			   	particle.velocity.y -= (Math.random() * .0005);
+
+			    particle.y += particle.velocity.y;
+			    particle.z += particle.velocity.z;
+			    particle.x += particle.velocity.x;
+			}
+
+			        	/*
+			Update movie texture
+			*/	
+			if (movie.readyState === movie.HAVE_ENOUGH_DATA){
+				videoMaterial.map.needsUpdate = true;
+			}
+
+			//Update VR headset position and apply to camera.
+			controls.update();
+
+			// Render the scene through the VREffect.
+			effect.render( scene, camera );
+			requestAnimationFrame( animate );
+		}
+
+		animate();	// Kick off animation loop
+
+		/*
+		Listen for click event to enter full-screen mode.
+		We listen for single click because that works best for mobile for now
+		*/
+		document.body.addEventListener( 'click', function(){
+			effect.setFullScreen( true );
+		})
+
+		/*
+		Listen for keyboard events
+		*/
+		function onkey(event) {
+	    event.preventDefault();
+
+	    if (event.keyCode == 90) { // z
+	    	controls.resetSensor(); //zero rotation
+	    } else if (event.keyCode == 70 || event.keyCode == 13) { //f or enter
+	    	effect.setFullScreen(true) //fullscreen
+	    }
+	  };
+	  window.addEventListener("keydown", onkey, true);
+
+		/*
+		Handle window resizes
+		*/
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			effect.setSize( window.innerWidth, window.innerHeight );
+		}
+		window.addEventListener( 'resize', onWindowResize, false );
+	</script>
+</html>
