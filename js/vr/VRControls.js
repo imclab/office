@@ -2,6 +2,7 @@
 /**
  * @author dmarcos / https://github.com/dmarcos
  * @author hawksley / https://github.com/hawksley (added support for many more forms of control)
+ * modified by /vihart 
  */
 
 THREE.VRControls = function ( camera, done ) {
@@ -160,10 +161,12 @@ THREE.VRControls = function ( camera, done ) {
 			for (j in this.controllers) {
 				var controller = this.controllers[j];
 
-				this.manualMoveRate[1] = -1 * Math.round(controller.axes[0]);
+				this.manualMoveRate[1] = -1 * Math.round(controller.axes[0]);//left thumbstick fwd/back/strafe
 				this.manualMoveRate[0] = Math.round(controller.axes[1]);
-				this.manualRotateRate[1] = -1 * Math.round(controller.axes[2]);
-				this.manualRotateRate[0] = -1 * Math.round(controller.axes[3]);
+				this.manualMoveRate[1] += -1 * Math.round(controller.axes[3]);//right thumbstick same
+				this.manualMoveRate[0] += Math.round(controller.axes[4]);
+				this.manualRotateRate[1] = (Math.round(controller.axes[2])+1)/3;//left trigger rotates left
+				this.manualRotateRate[1] += -1 * (Math.round(controller.axes[5])+1)/3;//right trigger rotates right
 			}
 		// }
 

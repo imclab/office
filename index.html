@@ -44,6 +44,17 @@ It has been developed with the help of a great many people including (but not li
 
 	<video id="demoMovie" autoplay=true style="display:none" src="media/engelbart.mp4" loop=true></video>
 
+	<video id="toasterMovie" autoplay=true style="display:none" src="media/toaster.mp4" loop=true></video>
+
+	<!--jumping sounds recorded by yours truly-->
+	<audio id='jump1' src="media/jump1.ogg">
+	<audio id='jump2' src="media/jump2.ogg">
+	<audio id='jump3' src="media/jump3.ogg">
+	<audio id='jump4' src="media/jump4.ogg">
+	<audio id='jump5' src="media/jump5.ogg">
+	<audio id='jump6' src="media/jump6.ogg">
+	<audio id='jump7' src="media/jump7.ogg">
+
 	</body>
 
 	<!--
@@ -60,6 +71,8 @@ It has been developed with the help of a great many people including (but not li
 
 
     <script src="js/loaders/OBJLoader.js"></script>
+	<script src="js/loaders/MTLLoader.js"></script>
+	<script src="js/loaders/OBJMTLLoader.js"></script>
 
 	<!--
 	VREffect.js handles stereo camera setup and rendering.
@@ -91,6 +104,16 @@ It has been developed with the help of a great many people including (but not li
 		var effect = new THREE.VREffect( renderer );
 		effect.setSize( window.innerWidth, window.innerHeight );
 
+		var jumpSounds = [
+			document.querySelector('#jump1'),
+			document.querySelector('#jump2'),
+			document.querySelector('#jump3'),
+			document.querySelector('#jump4'),
+			document.querySelector('#jump5'),
+			document.querySelector('#jump6'),
+			document.querySelector('#jump7')
+		];
+
 		var libMovie = document.getElementById("libgif");
 		var libVideoTexture = new THREE.Texture(libMovie);
 		libVideoTexture.minFilter = THREE.LinearFilter;
@@ -104,6 +127,20 @@ It has been developed with the help of a great many people including (but not li
 		libgif.rotation.y = 2.5;
 		libgif.position.set(52,3,70);
 		scene.add(libgif);
+
+		//toastergif
+		var toasterMovie = document.getElementById("toasterMovie");
+		var toasterVideoTexture = new THREE.Texture(toasterMovie);
+		toasterVideoTexture.minFilter = THREE.LinearFilter;
+		toasterVideoTexture.magFilter = THREE.LinearFilter;
+		var toasterVideoMaterial = new THREE.MeshLambertMaterial( { map: toasterVideoTexture, overdraw: true } );
+
+		var toasterFilmGeom = new THREE.PlaneGeometry( 2, 4, 2 );
+		var toaster = new THREE.Mesh( toasterFilmGeom, toasterVideoMaterial );
+		toaster.position.set(59,3,-10);
+		toaster.rotation.y = -1.6;
+		scene.add( toaster );
+
 
 		//demo space film
 		var demoMovie = document.getElementById("demoMovie");
@@ -125,6 +162,84 @@ It has been developed with the help of a great many people including (but not li
 		projector.rotation.x = .4;
 		scene.add(projector);
 
+		//swirly ring thing
+		var ringSwirl = new THREE.Object3D;
+		var ringSegments = 50;
+
+		for (var i = 0; i < ringSegments; i++){
+			var geometry = new THREE.RingGeometry( i/4+.01, i/4+.23, 32 );
+			var material = new THREE.MeshNormalMaterial( {side: THREE.DoubleSide } );
+			var mesh = new THREE.Mesh( geometry, material );
+			ringSwirl.add(mesh);
+		}
+
+		ringSwirl.scale.set(.3,.3,.3);
+		ringSwirl.position.set(-25,5,-4);
+		scene.add( ringSwirl );
+
+		//tiny Vi
+
+
+		// var onProgress = function ( xhr ) {
+		// 	if ( xhr.lengthComputable ) {
+		// 		var percentComplete = xhr.loaded / xhr.total * 100;
+		// 		console.log( Math.round(percentComplete, 2) + '% downloaded' );
+		// 	}
+		// };
+		// var onError = function ( xhr ) {
+		// };
+
+		// var tinyVi = new THREE.Object3D();
+		// var objmtlLoader = new THREE.OBJMTLLoader();
+			
+		// objmtlLoader.load( 'media/tinyVi.obj', 'media/tinyVi.mtl', function ( object ) {
+		// 	object.position.z = -4;
+		// 	object.position.y = 1;
+		// 	tinyVi = object;
+		// 	scene.add( tinyVi );
+		// }, onProgress, onError );
+
+		//orrery
+		var orrery = new THREE.Object3D;
+		var earthSystem = new THREE.Object3D;
+
+		var sphereGeom = new THREE.IcosahedronGeometry(1,2);
+
+		var sunMaterial = new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture(
+			    "media/sun.jpg"),
+			color:0xffffff
+			});
+		var theSun = new THREE.Mesh( sphereGeom, sunMaterial );
+
+		var earthMaterial = new THREE.MeshLambertMaterial({
+			map: THREE.ImageUtils.loadTexture(
+			    "media/earth.jpg"),
+			color:0xffffff
+			});
+		var earth = new THREE.Mesh( sphereGeom, earthMaterial );
+		earth.scale.set(.5,.5,.5);
+
+		var moonMaterial = new THREE.MeshLambertMaterial({
+			map: THREE.ImageUtils.loadTexture(
+			    "media/moon.jpg"),
+			color:0xffffff
+			});
+		var moon = new THREE.Mesh( sphereGeom, moonMaterial );
+		moon.scale.set(.25,.25,.25);
+		moon.position.set(2,0,0);
+
+		earthSystem.add(earth, moon);
+		earthSystem.position.set(5,0,0);
+		orrery.add(theSun, earthSystem);
+		orrery.position.set(40,3,-28);
+		scene.add(orrery);
+		
+		var sunLight = new THREE.PointLight( 0xeeffaa, .9, 20);
+		sunLight.position.set(40,3,-28);
+		scene.add( sunLight );
+
+
 		//Emily drawings
 		var drawingMap = THREE.ImageUtils.loadTexture( "media/broken-arches.jpg" );
 		var drawingGeom = new THREE.PlaneGeometry( 12, 12, 32 );
@@ -133,6 +248,31 @@ It has been developed with the help of a great many people including (but not li
 		drawingPlane.position.set(27,2,-17.3);
 		drawingPlane.rotation.y = .1;
 		scene.add( drawingPlane );
+
+
+		var drawing2Map = THREE.ImageUtils.loadTexture( "media/emilyPerson.png" );
+		var drawing2Geom = new THREE.PlaneGeometry( 4.5, 9, 32 );
+		var drawing2Material = new THREE.MeshLambertMaterial({
+			color: 0xffffff, 
+			map: drawing2Map, 
+			transparent: true
+			});
+		var drawing2Plane = new THREE.Mesh( drawing2Geom, drawing2Material );
+		drawing2Plane.position.set(-13,1,-42);
+		drawing2Plane.rotation.y = -1.6;
+		scene.add( drawing2Plane );
+
+		var ghost = new THREE.Mesh( drawing2Geom, drawing2Material );
+		ghost.position.set(-23,1,76);
+		ghost.rotation.y = 0;
+		scene.add( ghost );
+
+		var doll = new THREE.Mesh(
+			new THREE.CylinderGeometry(1,1,7),
+			drawing2Material
+			);
+		doll.position.set(20,0,80);
+		scene.add( doll );
 
 		//seeing spaces poster
 		var posterMap = THREE.ImageUtils.loadTexture( "media/SeeingSpacesSmall.jpg" );
@@ -266,7 +406,7 @@ It has been developed with the help of a great many people including (but not li
 		var material = new THREE.MeshLambertMaterial({wireframe:true, wireframeLinewidth:5});
 		var dodecahedron = new THREE.Mesh( geometry, material );
 		dodecahedron.scale.set(1.3,1.3,1.3);
-		dodecahedron.position.set(-24,-4,45);
+		dodecahedron.position.set(0,-4,45);
 		scene.add(dodecahedron);
 
 		//office render sphere image
@@ -295,7 +435,7 @@ It has been developed with the help of a great many people including (but not li
 		scene.add(skybox);
 
 		//lights		
-		var light = new THREE.PointLight( 0xffaaaa, 1, 20);
+		var light = new THREE.PointLight( 0xffcccc, 1, 20);
 		light.position.set( -26,5,-38);
 		light.castShadow = true;
 		scene.add( light );
@@ -357,11 +497,33 @@ It has been developed with the help of a great many people including (but not li
 		/*
 		Request animation frame loop function
 		*/
+
+		//camera.position.set(56,2,-11);
+
+
 		function animate() {
 
 			t+=1
 
 			camera.position.y = 2;
+
+			drawing2Plane.position.y = Math.sin(t/200)/4 + 1;
+			drawing2Plane.position.z = Math.sin(t/500) - 42;
+			drawing2Plane.material.needsUpdate=true;
+
+			ghost.position.y = Math.sin(t/100)/2 + 2;
+			ghost.position.x = Math.min(camera.position.x, -23) + Math.sin(t/30)/2;
+
+			//ring sculpture rotations
+			for (var i = 0; i < ringSegments; i++){
+				ringSwirl.children[i].rotation.y += .001 * i;
+			}
+
+			//orrery rotations
+			earthSystem.rotation.y += .003;
+			earth.rotation.y += .02;
+			orrery.rotation.y += .0004;
+			theSun.rotation.y -= .002;
 
 			demoMovie.volume = 3/(filmDistance*filmDistance);
 			filmDistance = camera.position.distanceTo(projector.position);
@@ -380,6 +542,17 @@ It has been developed with the help of a great many people including (but not li
 			} else {
 				fridgeLight.intensity = .2;
 			}
+
+
+			//doll runs away when near
+			dollDistance = camera.position.distanceTo(doll.position);
+			if (dollDistance < 12){
+				doll.position.x += Math.sin(t/(70))/(dollDistance/2);
+				doll.position.z += Math.cos(t/(101))/(dollDistance/2);
+				doll.rotation.y += .002;
+			}
+			doll.position.x = Math.min(Math.max(doll.position.x, -9), 32);
+			doll.position.z = Math.min(Math.max(doll.position.z, -13), 90);
 
 			//lego runs away when near
 			legoDistance = camera.position.distanceTo(LEGO.position);
@@ -442,9 +615,14 @@ It has been developed with the help of a great many people including (but not li
 			if (demoMovie.readyState === demoMovie.HAVE_ENOUGH_DATA){
 				demoVideoMaterial.map.needsUpdate = true;
 			}
+			if (toasterMovie.readyState === demoMovie.HAVE_ENOUGH_DATA){
+				toasterVideoMaterial.map.needsUpdate = true;
+			}
 
 			//Update VR headset position and apply to camera.
 			controls.update();
+
+			gamepadUpdate();
 
 			// Render the scene through the VREffect.
 			effect.render( scene, camera );
@@ -471,9 +649,40 @@ It has been developed with the help of a great many people including (but not li
 	    	controls.resetSensor(); //zero rotation
 	    } else if (event.keyCode == 70 || event.keyCode == 13) { //f or enter
 	    	effect.setFullScreen(true) //fullscreen
-	    }
+	    } else if (event.keyCode == 32) {//space
+	    	var j = Math.floor(Math.random()*7);
+	  		jumpSounds[j].play();
+	  	}
 	  };
 	  window.addEventListener("keydown", onkey, true);
+
+	  //controller jump
+	  	var aPressed = false;
+		var bPressed = false;
+		var xPressed = false;
+		var yPressed = false;
+		function gamepadUpdate() {
+		    for (j in controls.controllers) {
+		      var controller = controls.controllers[j];
+
+		      var i = Math.floor(Math.random()*7);
+
+		      if (controller.buttons[11].pressed && !aPressed) {
+		        jumpSounds[i].play();
+		      } else if (controller.buttons[12].pressed && !bPressed) {
+		        jumpSounds[i].play();
+		      } else if (controller.buttons[13].pressed && !xPressed) {
+		        jumpSounds[i].play();
+		      } else if (controller.buttons[14].pressed && !yPressed) {
+		        jumpSounds[i].play();
+		      }
+
+		      aPressed = controller.buttons[11].pressed;
+		      bPressed = controller.buttons[12].pressed;
+		      cPressed = controller.buttons[13].pressed;
+		      dPressed = controller.buttons[14].pressed;
+		    }
+		}
 
 		/*
 		Handle window resizes
