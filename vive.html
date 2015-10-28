@@ -111,7 +111,7 @@ It has been developed with the help of a great many people including (but not li
 
 		//xyz offsets for all objects
 		var ox = -40;
-		var oz = -11;
+		var oz = -9;
 		var oy = 0;
 
 		//ssound room wall
@@ -156,7 +156,7 @@ It has been developed with the help of a great many people including (but not li
 		earthSystem.add(earth, moon);
 		earthSystem.position.set(5,0,0);
 		orrery.add(theSun, earthSystem);
-		orrery.position.set(-1,5,8);
+		orrery.position.set(-1,9,8);
 		scene.add(orrery);
 		
 		var sunLight = new THREE.PointLight( 0xeeffaa, .9, 20);
@@ -284,7 +284,7 @@ It has been developed with the help of a great many people including (but not li
 
 		//SUN
 		var sunLight = new THREE.PointLight( 0xffbb00, .9, 100);
-		sunLight.position.set( -1,5,8);
+		sunLight.position.set( -1,9,8);
 		sunLight.castShadow = true;
 		scene.add( sunLight );
 
@@ -344,13 +344,13 @@ It has been developed with the help of a great many people including (but not li
 
 			//doll runs away when near
 			dollDistance = camera.position.distanceTo(doll.position);
-			if (dollDistance < 12){
+			if (dollDistance < 7){
 				doll.position.x += Math.sin(t/(70))/(dollDistance/2);
 				doll.position.z += Math.cos(t/(101))/(dollDistance/2);
 				doll.rotation.y += .002;
 			}
 			doll.position.x = Math.min(Math.max(doll.position.x, -8), 7);
-			doll.position.z = Math.min(Math.max(doll.position.z, -8), 7);
+			doll.position.z = Math.min(Math.max(doll.position.z, 7), 14);
 
 			//lego runs away when near
 			legoDistance = camera.position.distanceTo(LEGO.position);
