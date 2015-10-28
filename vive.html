@@ -344,7 +344,7 @@ It has been developed with the help of a great many people including (but not li
 
 			//doll runs away when near
 			dollDistance = camera.position.distanceTo(doll.position);
-			if (dollDistance < 7){
+			if (dollDistance < 9){
 				doll.position.x += Math.sin(t/(70))/(dollDistance/2);
 				doll.position.z += Math.cos(t/(101))/(dollDistance/2);
 				doll.rotation.y += .002;
@@ -358,7 +358,7 @@ It has been developed with the help of a great many people including (but not li
 				LEGO.position.x += Math.sin(t/40);
 				LEGO.position.z += Math.cos(t/51);
 			}
-			LEGO.position.x = Math.min(Math.max(LEGO.position.x, -8), 7);
+			LEGO.position.x = Math.min(Math.max(LEGO.position.x, -7), 7);
 			LEGO.position.z = Math.min(Math.max(LEGO.position.z, -8), 7);
 
 
